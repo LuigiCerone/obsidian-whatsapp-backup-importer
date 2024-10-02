@@ -1,44 +1,45 @@
-import { App, Notice, TextComponent, ButtonComponent, FuzzySuggestModal, TFile } from 'obsidian';
+import { App, Setting, Modal, Platform } from 'obsidian';
 
-export class InputModal extends FuzzySuggestModal<TFile> {
-    destination_file: TFile;
-    extra_input_el: HTMLInputElement;
+export class InputModal extends Modal {
+    selectedId: number = 0;
+    outputLocation: string;
 
     constructor(app: App) {
-        super(app);
-    }
-
-    getItems(): TFile[] {
-        return this.app.vault.getFiles()
-    }
-
-    getItemText(item: TFile): string {
-        return item.path;  // You can choose to show the file path or just the file name (item.name)
-    }
-
-    onChooseItem(item: TFile, evt: MouseEvent | KeyboardEvent) {
-        // For example, open the file when it's selected
-        // this.app.workspace.openLinkText(item.path, item.path, true);
-        this.destination_file = item
-    }
+		super(app);
+		this.titleEl.setText('Import Whatsapp backup into Obsidian');
+		this.modalEl.addClass('mod-importer');
+	}
 
     onOpen() {
         const { contentEl } = this;
+		contentEl.empty();
 
-        // Create a new input element
-        this.extra_input_el = contentEl.createEl("input", { type: "text" });
-        this.extra_input_el.placeholder = "Enter additional text...";
 
-        // Optionally add some styling
-        this.extra_input_el.style.marginBottom = "10px";
-        this.extra_input_el.style.width = "100%";
-        this.extra_input_el.style.padding = "8px";
+        new Setting(contentEl)
+			.setName('Output folder')
+			.setDesc('Choose a folder in the vault to put the imported files. Leave empty to output to vault root.')
+			.addText(text => text
+				.onChange(value => this.outputLocation = value));
+        
+        let fileLocationSetting = new Setting(contentEl)
+			.setName('Backup file to import')
+			.setDesc('Pick the file that you want to import.')
+			.addButton(button => button
+				.setButtonText('Choose file')
+				.onClick(async () => {
+					if (Platform.isDesktopApp) {
+						let properties = ['openFile', 'dontAddToRecent'];
+						let filePaths: string[] = window.electron.remote.dialog.showOpenDialogSync({
+							title: 'Pick files to import', properties,
+							filters: [{ extensions: ['zip'] }],
+						});
 
-        // Insert the new input at the top of the modal, before the search box
-        contentEl.prepend(this.extra_input_el);
-
-        // Optionally, you can focus on the new input by default
-        this.extra_input_el.focus();
+						// if (filePaths && filePaths.length > 0) {
+						//	this.files = filePaths.map((filepath: string) => new NodePickedFile(filepath));
+						//	updateFiles();
+						//}
+					}
+				}));
     }
 
     onClose() {
