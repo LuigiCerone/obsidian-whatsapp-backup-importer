@@ -1,8 +1,27 @@
-/*
+.spinner-container {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
 
-If your plugin does not need CSS, delete this file.
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-*/
+.spinner-message {
+    margin-top: 10px; /* Add some spacing between the spinner and message */
+    font-size: 16px;  /* Set font size */
+    color: #555;      /* Color for the message text */
+}
