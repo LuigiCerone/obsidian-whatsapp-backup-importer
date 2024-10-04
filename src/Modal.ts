@@ -1,4 +1,5 @@
 import { App, Setting, Modal, Platform } from 'obsidian';
+import { Importer } from './Importer';
 
 declare global {
     interface Window {
@@ -7,8 +8,9 @@ declare global {
 }
 
 export class InputModal extends Modal {
-    outputLocation: string;
-    inputArchivePath: string;
+    outputLocation: string = '';
+    inputArchivePath: string = '';
+    importer: Importer;
 
     constructor(app: App) {
         super(app);
@@ -53,35 +55,23 @@ export class InputModal extends Modal {
                 el.createEl('button', { cls: 'mod-cta', text: 'Import' }, el => {
                     el.addEventListener('click', async () => {
                         contentEl.empty();
+                        this.importer = new Importer(this.app, this.inputArchivePath, this.outputLocation);
 
                         const spinnerDiv = contentEl.createDiv({ cls: "spinner-container" });
 
-                        const spinner = spinnerDiv.createDiv({ cls: "spinner" });
-                        const message = spinnerDiv.createEl('p', { cls: "spinner-message", text: "Wait while I import..." });
-
-                        this.doBackgroundWork().then(() => {
+                        spinnerDiv.createDiv({ cls: "spinner" });
+                        spinnerDiv.createEl('p', { cls: "spinner-message", text: "Wait while I import..." });
+                        
+                        try {
+                            await this.importer.run();
+                        }
+                        finally {
                             this.close();
-                        });
-                        // try {
-                        //    await import();
-                        // }
-                        // finally {
-                        //    buttonsEl.createEl('button', { cls: 'mod-cta', text: 'Done' }, el => {
-                        //        el.addEventListener('click', () => this.close());
-                        //    });
-                        console.log('Clicked')
+                        }
                     });
                 });
             });
         }
-    }
-
-    async doBackgroundWork(): Promise<void> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 3000);  // Simulate 3 seconds of work
-        });
     }
 
     onClose() {
