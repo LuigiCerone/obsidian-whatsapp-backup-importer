@@ -1,15 +1,43 @@
 import { promises as fs } from 'fs';
-import { BlobReader, Entry, ZipReader } from '@zip.js/zip.js';
+import { BlobReader, Entry, ZipReader, BlobWriter } from '@zip.js/zip.js';
 
-export async function readZip(path: string): Promise<Entry[]> {
+export type CustomZipEntry = {
+    path: string;
+    content: Buffer;
+};
+
+export async function readZip(path: string): Promise<CustomZipEntry[]> {
 
     // Read the file from the filesystem as a Buffer
     const buffer = await fs.readFile(path);
 
-    // Convert the Buffer to a Blob (which zip.js understands)
+    // Convert the Buffer to a Blob
     const blob = new Blob([buffer]);
 
     const reader = new ZipReader(new BlobReader(blob));
 
-    return await reader.getEntries();
+    const entries = await reader.getEntries();
+
+    return await mapEntries(entries)
+}
+
+
+async function mapEntries(entries: Entry[]): Promise<CustomZipEntry[]> {
+    const mappedEntries = await Promise.all(
+        entries.map(async (entry: Entry): Promise<CustomZipEntry> => {
+            if (typeof entry.getData === 'function' && entry.filename) {
+                const blob = await entry.getData(new BlobWriter());
+                const arrayBuffer = await blob.arrayBuffer();
+
+                return {
+                    path: entry.filename,
+                    content: Buffer.from(new Uint8Array(arrayBuffer))
+                };
+            } else {
+                throw new Error(`Invalid entry: missing getData method or filename for entry: ${entry}`);
+            }
+        })
+    );
+
+    return mappedEntries;
 }
