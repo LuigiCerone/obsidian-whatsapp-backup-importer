@@ -1,9 +1,8 @@
 import { App, Notice, TFolder, Vault } from "obsidian";
 import { CustomZipEntry, readZip } from "./utils/zip";
 
-
-const IMAGE_FOLDER: string = "images"
-const VIDEO_FOLDER: string = "videos"
+const IMAGE_FOLDER_NAME: string = "images"
+const VIDEO_FOLDER_NAME: string = "videos"
 
 export class Importer {
     app: App;
@@ -50,8 +49,8 @@ export class Importer {
 
 		if (folder instanceof TFolder) {
 			// Create nested folder for images and videos.
-			await this.createNestedFolder(`${folderPath}/${IMAGE_FOLDER}`);
-			await this.createNestedFolder(`${folderPath}/${VIDEO_FOLDER}`);
+			await this.createNestedFolder(`${folderPath}/${IMAGE_FOLDER_NAME}`);
+			await this.createNestedFolder(`${folderPath}/${VIDEO_FOLDER_NAME}`);
 			return folder;
 		}
 
@@ -70,16 +69,22 @@ export class Importer {
 
 	async copyDataInVault(entries: CustomZipEntry[]) {
 		let { vault } = this.app;
+	
+		for (let entry of entries) {
+			let path: string = "";
+	
+			if (entry.path.endsWith('_chat.txt')) {
+				path = `${this.outputFolder?.path}/chats.md`;
+				await vault.create(path, entry.content as string);
+	
+			} else if (entry.path.endsWith('jpg') || entry.path.endsWith('png')) {
+					path = `${this.outputFolder?.path}/${IMAGE_FOLDER_NAME}/${entry.path}`;
+					await vault.createBinary(path, entry.content as Buffer);
 
-		for (let entry of entries){
-			let path: string = ""
-			if (entry.path.endsWith('jpg')) {
-				path = `${this.outputFolder?.path}/${IMAGE_FOLDER}/${entry.path}`
 			} else if (entry.path.endsWith('mp4')) {
-				path = `${this.outputFolder?.path}/${VIDEO_FOLDER}/${entry.path}`
-			}
-
-            await vault.createBinary(path, entry.content);
+					path = `${this.outputFolder?.path}/${VIDEO_FOLDER_NAME}/${entry.path}`;
+					await vault.createBinary(path, entry.content as Buffer);
+			}	
 		}
 	}
 }

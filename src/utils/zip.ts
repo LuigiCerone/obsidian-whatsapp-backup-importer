@@ -3,7 +3,7 @@ import { BlobReader, Entry, ZipReader, BlobWriter } from '@zip.js/zip.js';
 
 export type CustomZipEntry = {
     path: string;
-    content: Buffer;
+    content: Buffer | string;
 };
 
 export async function readZip(path: string): Promise<CustomZipEntry[]> {
@@ -21,18 +21,26 @@ export async function readZip(path: string): Promise<CustomZipEntry[]> {
     return await mapEntries(entries)
 }
 
-
 async function mapEntries(entries: Entry[]): Promise<CustomZipEntry[]> {
     const mappedEntries = await Promise.all(
         entries.map(async (entry: Entry): Promise<CustomZipEntry> => {
             if (typeof entry.getData === 'function' && entry.filename) {
                 const blob = await entry.getData(new BlobWriter());
                 const arrayBuffer = await blob.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
 
-                return {
-                    path: entry.filename,
-                    content: Buffer.from(new Uint8Array(arrayBuffer))
-                };
+                if (entry.filename.endsWith('.txt')) {
+                    const textContent = new TextDecoder().decode(uint8Array);
+                    return {
+                        path: entry.filename,
+                        content: textContent
+                    };
+                } else {
+                    return {
+                        path: entry.filename,
+                        content: Buffer.from(uint8Array)
+                    };
+                }
             } else {
                 throw new Error(`Invalid entry: missing getData method or filename for entry: ${entry}`);
             }
