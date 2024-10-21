@@ -1,4 +1,4 @@
-import { App, Setting, Modal, Platform } from 'obsidian';
+import { App, Setting, Modal, Platform, Notice } from 'obsidian';
 import { Importer } from './Importer';
 
 declare global {
@@ -18,18 +18,16 @@ export class InputModal extends Modal {
         this.modalEl.addClass('mod-importer');
     }
 
-    onOpen() {
-        const { contentEl } = this;
-        contentEl.empty();
-
-
+    createSettingForOutputFolder(contentEl: HTMLElement) {
         new Setting(contentEl)
             .setName('Output folder')
             .setDesc('Choose a folder in the vault to put the imported files. Leave empty to output to vault root.')
             .addText(text => text
                 .onChange(value => this.outputLocation = value));
+    }
 
-        let outputLocation = new Setting(contentEl)
+    createSettingForInputZipFile(contentEl: HTMLElement) {
+        new Setting(contentEl)
             .setName('Backup file to import')
             .setDesc('Pick the ZIP file that you want to import.')
             .addButton(button => button
@@ -42,40 +40,57 @@ export class InputModal extends Modal {
                             filters: [{ name: 'ZIP Files', extensions: ['zip'] }],
                         });
 
-                        console.log(filePath);
-
                         if (filePath && filePath.length == 1) {
-                        	this.inputArchivePath = filePath[0];
+                            this.inputArchivePath = filePath[0];
                         }
                     }
                 }));
-        
-        if (outputLocation) {
-            contentEl.createDiv('modal-button-container', el => {
-                el.createEl('button', { cls: 'mod-cta', text: 'Import' }, el => {
-                    el.addEventListener('click', async () => {
-                        contentEl.empty();
-                        this.importer = new Importer(this.app, this.inputArchivePath, this.outputLocation);
+    }
 
-                        const spinnerDiv = contentEl.createDiv({ cls: "spinner-container" });
+    showSpinner(contentEl: HTMLElement) {
+        const spinnerDiv = contentEl.createDiv({ cls: "spinner-container" });
+        spinnerDiv.createDiv({ cls: "spinner" });
+        spinnerDiv.createEl('p', { cls: "spinner-message", text: "Wait while I import..." });
+    }
 
-                        spinnerDiv.createDiv({ cls: "spinner" });
-                        spinnerDiv.createEl('p', { cls: "spinner-message", text: "Wait while I import..." });
-                        
-                        try {
-                            await this.importer.run();
-                        }
-                        finally {
-                            this.close();
-                        }
-                    });
+    createSubmitButton(contentEl: HTMLElement) {
+        contentEl.createDiv('modal-button-container', el => {
+            el.createEl('button', { cls: 'mod-cta', text: 'Import' }, el => {
+                el.addEventListener('click', async () => {
+                    if (!this.inputArchivePath || ! this.outputLocation) {
+                        new Notice('Please insert the required parameters');
+                        return;
+                    }
+
+                    contentEl.empty();
+                    this.showSpinner(contentEl)
+
+                    this.importer = new Importer(this.app, this.inputArchivePath, this.outputLocation);
+
+                    try {
+                        await this.importer.run();
+                    }
+                    finally {
+                        this.close();
+                    }
                 });
             });
-        }
+        });
+    }
+
+    onOpen() {
+        const { contentEl } = this;
+        contentEl.empty();
+
+        this.createSettingForOutputFolder(contentEl);
+
+        this.createSettingForInputZipFile(contentEl);
+
+        this.createSubmitButton(contentEl);
     }
 
     onClose() {
         const { contentEl } = this;
-        contentEl.empty(); // Clean up modal content on close
+        contentEl.empty();
     }
 }
