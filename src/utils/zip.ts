@@ -6,12 +6,11 @@ export type CustomZipEntry = {
     content: Buffer | string;
 };
 
-export async function readZip(path: string): Promise<CustomZipEntry[]> {
+export async function readZipEntries(path: string): Promise<CustomZipEntry[]> {
 
     // Read the file from the filesystem as a Buffer
     const buffer = await fs.readFile(path);
 
-    // Convert the Buffer to a Blob
     const blob = new Blob([buffer]);
 
     const reader = new ZipReader(new BlobReader(blob));

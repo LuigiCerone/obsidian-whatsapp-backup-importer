@@ -65,10 +65,8 @@ export class InputModal extends Modal {
                     contentEl.empty();
                     this.showSpinner(contentEl)
 
-                    this.importer = new Importer(this.app, this.inputArchivePath, this.outputLocation);
-
                     try {
-                        await this.importer.run();
+                        await new Importer(this.app, this.inputArchivePath, this.outputLocation).run();
                     }
                     finally {
                         this.close();
