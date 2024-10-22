@@ -1,96 +1,76 @@
-# Obsidian Sample Plugin
+# Obsidian Whatsapp Backup Importer
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+This is a custom plugin for [Obsidian](https://obsidian.md) that allows you to import exported WhatsApp chat archives (in .zip format) into your vault. The plugin extracts and processes all chat messages, attachments (such as images and videos), and places them neatly inside a folder of your choosing, complete with links to the attachments.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## Features
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+- **Chat Import:** Extracts messages from a WhatsApp chat export (in `.zip` format) and imports them into your Obsidian vault.
+- **Attachment Handling:** Automatically imports photos and videos attachments from the chat and creates appropriate links within the chat files.
+- **Customizable Output Folder:** You can specify where in your vault the imported chats and attachments should be stored.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Installation
 
-## First time developing plugins?
+To install the plugin, follow these steps:
 
-Quick starting guide for new plugin devs:
+1. Download the latest release from the [Releases](https://github.com/LuigiCerone/obsidian-whatsapp-backup-importer/releases) section.
+2. Place the plugin folder into the `.obsidian/plugins` directory of your vault.
+3. In Obsidian, navigate to `Settings -> Community Plugins`, enable the plugin, and reload Obsidian.
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## How to Use
 
-## Releasing new releases
+1. **Export WhatsApp Chat**: From your smartphone or computer, export the chat you want to import as a `.zip` file. This zip file should contain a `.txt` or `.json` file for the messages and any attachments (images, videos, etc.).
+   
+2. **Open Command Palette**: In Obsidian, press `Cmd + P` (or `Ctrl + P` on Windows/Linux) to open the command palette.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+3. **Run the Plugin**: Search for the command `WhatsApp backup importer: Open Whatsapp backup importer`. Select it and run.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+4. **Input Required**:
+   - **Output Folder**: Enter the folder within your vault where you want to store the chat.
+   - **ZIP File**: Select the `.zip` file that contains the exported WhatsApp chat archive.
 
-## Adding your plugin to the community plugin list
+5. **Importing**: The plugin will automatically extract the messages and attachments from the `.zip` file and place them in the specified output folder.
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+6. **Check the Imported Files**: You will find the imported chat as markdown files, with links to attachments. All media will be stored in subfolders, and the corresponding links to those files will be embedded in the markdown files.
 
-## How to use
+## Example
+
+After importing a WhatsApp chat, your folder structure might look like this:
+
+![./example.png](./example.png)
+
+## Compatibility
+
+- Obsidian 1.0.0 or higher
+- Tested on Windows, macOS, and Linux
+
+## Contributing
+
+Contributions are welcome! Feel free to submit a pull request or report issues.
+
+1. Fork this repository.
+2. Create a branch (`git checkout -b feature/your-feature`).
+3. Commit your changes (`git commit -am 'Add your feature'`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Open a pull request.
+
+### How to run
 
 - Clone this repo.
 - Make sure your NodeJS is at least v16 (`node --version`).
 - `npm i` or `yarn` to install dependencies.
 - `npm run dev` to start compilation in watch mode.
 
-## Manually installing the plugin
+## Known Issues
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+- Ensure that the WhatsApp export is in `.zip` format and contains the required chat messages and attachments. Other formats are not be supported.
+- If attachments are not linked correctly, check that the file names in the `.zip` match those referenced in the chat export.
+- If the chat contains image with caption, the caption's text is not exported in the `.zip` file if running on iOS but only in Android.
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+## License
 
-## Funding URL
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-You can include funding URLs where people who use your plugin can financially support it.
+---
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+If you encounter any bugs or have suggestions for new features, feel free to open an issue or contribute!
 
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
