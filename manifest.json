@@ -1,7 +1,7 @@
 {
-	"id": "obsidian-whatsapp-backup",
+	"id": "whatsapp-backup",
 	"name": "Whatsapp backup importer",
-	"version": "1.0.1",
+	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Import Whatsapp export inside a note",
 	"author": "Luigi Cerone",

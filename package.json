@@ -1,5 +1,5 @@
 {
-	"name": "obsidian-whatsapp-backup-import-plugin",
+	"name": "whatsapp-backup-import-plugin",
 	"version": "1.0.1",
 	"description": "This is a sample plugin for Obsidian that can be used to import inside a note a chat exported in a zip file",
 	"main": "main.js",
