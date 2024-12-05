@@ -5,5 +5,5 @@
 	"minAppVersion": "0.15.0",
 	"description": "Import Whatsapp export inside a note",
 	"author": "Luigi Cerone",
-	"isDesktopOnly": false
+	"isDesktopOnly": true
 }

@@ -95,13 +95,19 @@ export class Importer {
 	}
 
 	async formatChatFile(): Promise<string> {
-		const adapter = this.app.vault.adapter as FileSystemAdapter;
+		if (this.app.vault.adapter instanceof FileSystemAdapter) {
+			const adapter = this.app.vault.adapter;
+			const text = fs.readFileSync(`${adapter.getBasePath()}/${this.outputFolder?.path}/${CHAT_FILE_NAME}`, 'utf8');
+			const messages = whatsapp.parseString(text, {
+				parseAttachments: true
+			}) as Message[];
 
-		const text = fs.readFileSync(`${adapter.getBasePath()}/${this.outputFolder?.path}/${CHAT_FILE_NAME}`, 'utf8');
-		const messages = whatsapp.parseString(text, {
-			parseAttachments: true
-		}) as Message[];
+			return messages.map(msg => formatMessageToMarkdown(this.outputFolder!, msg)).join('');
 
-		return messages.map(msg => formatMessageToMarkdown(this.outputFolder!, msg)).join('');
+		} else {
+			console.error("The adapter is not a FileSystemAdapter");
+			throw new Error("Unsupported adapter type.");
+		}
+
 	}
 }
