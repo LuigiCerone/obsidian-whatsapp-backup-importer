@@ -14,7 +14,7 @@ export class InputModal extends Modal {
 
     constructor(app: App) {
         super(app);
-        this.titleEl.setText('Import Whatsapp backup into Obsidian');
+        this.titleEl.setText('Import WhatsApp backup into your vault');
         this.modalEl.addClass('mod-importer');
     }
 

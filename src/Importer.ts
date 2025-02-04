@@ -66,9 +66,9 @@ export class Importer {
 	async createNestedFolder(fullFolderPath: string) {
 		let { vault } = this.app;
 
-		const folderExists = await this.app.vault.adapter.exists(fullFolderPath);
+		const file = this.app.vault.getAbstractFileByPath(fullFolderPath);
 
-		if (!folderExists) {
+		if (file instanceof TFolder) {
 			return vault.createFolder(fullFolderPath);
 		}
 	}

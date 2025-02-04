@@ -1,4 +1,4 @@
-# Obsidian Whatsapp Backup Importer
+# WhatsApp Backup Importer
 
 This is a custom plugin for [Obsidian](https://obsidian.md) that allows you to import exported WhatsApp chat archives (in .zip format) into your vault. The plugin extracts and processes all chat messages, attachments (such as images and videos), and places them neatly inside a folder of your choosing, complete with links to the attachments.
 
@@ -22,7 +22,7 @@ To install the plugin, follow these steps:
    
 2. **Open Command Palette**: In Obsidian, press `Cmd + P` (or `Ctrl + P` on Windows/Linux) to open the command palette.
 
-3. **Run the Plugin**: Search for the command `WhatsApp backup importer: Open Whatsapp backup importer`. Select it and run.
+3. **Run the Plugin**: Search for the command `WhatsApp backup importer: Open WhatsApp backup importer`. Select it and run.
 
 4. **Input Required**:
    - **Output Folder**: Enter the folder within your vault where you want to store the chat.

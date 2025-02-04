@@ -7,7 +7,7 @@ export default class WhatsappBackupPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-whatsapp-backup-importer',
-			name: 'Import whatsapp backup',
+			name: 'Import WhatsApp backup',
 			callback: () => {
 				new InputModal(this.app).open();
 			}
